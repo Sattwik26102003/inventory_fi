@@ -1,5 +1,5 @@
 {
-  "name": "inventory-management-backend-no-orm",
+  "name": "inventory_fi",
   "version": "1.0.0",
   "description": "A backend server for an inventory management tool using Node.js, Express, and raw PostgreSQL queries.",
   "main": "server.js",
