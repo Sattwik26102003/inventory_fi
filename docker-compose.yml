@@ -1,0 +1,46 @@
+# docker-compose.yml
+# Defines and runs the multi-container Docker application.
+
+# The 'version' attribute is removed as it's obsolete in modern Docker Compose.
+
+services:
+  # The PostgreSQL database service
+  db:
+    image: postgres:14-alpine
+    container_name: inventory_fi_db
+    restart: always
+    # Environment variables for the PostgreSQL container.
+    # These are used by the postgres image to initialize the database.
+    # They will be pulled from your .env file.
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASSWORD}
+      POSTGRES_DB: ${DB_NAME}
+    # Maps port 5432 on the host to port 5432 in the container,
+    # so you can connect to the database from your machine if needed.
+    ports:
+      - '5432:5432'
+    # Mounts a named volume to persist database data even if the container is removed.
+    volumes:
+      - postgres-data:/var/lib/postgresql/data
+
+  # The Node.js application service
+  app:
+    container_name: inventory_fi_app
+    # Tells Docker Compose to build the image from the Dockerfile in the current directory.
+    build: .
+    restart: always
+    # Maps the application port to the host.
+    ports:
+      - '${PORT}:${PORT}'
+    # Specifies that the 'app' service depends on the 'db' service.
+    # Docker Compose will start the 'db' service first and wait for it to be ready.
+    depends_on:
+      - db
+    # Loads environment variables from the .env file into the container.
+    env_file:
+      - .env
+
+# Defines the named volume for data persistence.
+volumes:
+  postgres-data:
